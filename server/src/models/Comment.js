@@ -1,29 +1,28 @@
-import mongoose from "mongoose";
+export const createComment = async (req, res) => {
+  try {
+    const { video, text } = req.body;
 
-const commentSchema = new mongoose.Schema(
-  {
-    video: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Video",
-      required: true
-    },
-
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
-    },
-
-    text: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 1000
+    if (!text?.trim()) {
+      return res.status(400).json({
+        message: "Comment cannot be empty"
+      });
     }
-  },
-  {
-    timestamps: true
-  }
-);
 
-export default mongoose.model("Comment", commentSchema);
+    const comment = await Comment.create({
+      video,
+      text,
+      user: req.userId
+    });
+
+    const populatedComment = await comment.populate(
+      "user",
+      "username avatar"
+    );
+
+    res.status(201).json(populatedComment);
+  } catch (error) {
+    res.status(500).json({
+      message: "Unable to add comment"
+    });
+  }
+};
