@@ -10,7 +10,9 @@ import VideoCard from "../components/VideoCard";
 
 const Home = () => {
   const [videos, setVideos] = useState([]);
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
   const [category, setCategory] = useState("All");
 
   const [searchParams] = useSearchParams();
@@ -19,14 +21,21 @@ const Home = () => {
 
   useEffect(() => {
     const fetchVideos = async () => {
-      const { data } = await api.get("/videos", {
-        params: {
-          search,
-          category
-        }
-      });
+      try {
+        const response = await api.get("/videos", {
+          params: {
+            search,
+            category
+          }
+        });
 
-      setVideos(data);
+        setVideos(response.data);
+      } catch (error) {
+        console.error(
+          "Failed to fetch videos:",
+          error
+        );
+      }
     };
 
     fetchVideos();
@@ -49,19 +58,29 @@ const Home = () => {
             : "content"
         }
       >
+
         <CategoryBar
           selected={category}
           onSelect={setCategory}
         />
 
         <div className="video-grid">
-          {videos.map((video) => (
-            <VideoCard
-              key={video._id}
-              video={video}
-            />
-          ))}
+
+          {videos.length > 0 ? (
+            videos.map((video) => (
+              <VideoCard
+                key={video._id}
+                video={video}
+              />
+            ))
+          ) : (
+            <p>
+              No videos found.
+            </p>
+          )}
+
         </div>
+
       </main>
     </>
   );

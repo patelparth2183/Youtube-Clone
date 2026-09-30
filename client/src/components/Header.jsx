@@ -11,11 +11,15 @@ const Header = ({ onMenuClick }) => {
   const handleSearch = (e) => {
     e.preventDefault();
 
-    navigate(
-      search
-        ? `/?search=${encodeURIComponent(search)}`
-        : "/"
-    );
+    const trimmedSearch = search.trim();
+
+    if (trimmedSearch) {
+      navigate(
+        `/?search=${encodeURIComponent(trimmedSearch)}`
+      );
+    } else {
+      navigate("/");
+    }
   };
 
   return (
@@ -30,15 +34,18 @@ const Header = ({ onMenuClick }) => {
       </Link>
 
       <form onSubmit={handleSearch}>
+
         <input
+          type="text"
+          placeholder="Search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search"
         />
 
         <button type="submit">
           🔍
         </button>
+
       </form>
 
       {user ? (
