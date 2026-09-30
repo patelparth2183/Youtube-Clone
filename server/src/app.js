@@ -1,8 +1,11 @@
 import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
+import videoRoutes from "./routes/videoRoutes.js";
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/videos", videoRoutes);
 
 const app = express();
 
