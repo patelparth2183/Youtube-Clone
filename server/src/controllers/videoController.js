@@ -114,3 +114,40 @@ export const deleteVideo = async (req, res) => {
     });
   }
 };
+
+export const toggleLike = async (req, res) => {
+  const video = await Video.findById(req.params.id);
+
+  if (!video) {
+    return res.status(404).json({
+      message: "Video not found"
+    });
+  }
+
+  const userId = req.userId.toString();
+
+  const liked = video.likes.some(
+    id => id.toString() === userId
+  );
+
+  const disliked = video.dislikes.some(
+    id => id.toString() === userId
+  );
+
+  if (liked) {
+    video.likes.pull(req.userId);
+  } else {
+    video.likes.push(req.userId);
+
+    if (disliked) {
+      video.dislikes.pull(req.userId);
+    }
+  }
+
+  await video.save();
+
+  res.json({
+    likes: video.likes.length,
+    dislikes: video.dislikes.length
+  });
+};
