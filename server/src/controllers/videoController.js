@@ -58,3 +58,59 @@ export const createVideo = async (req, res) => {
     });
   }
 };
+
+export const updateVideo = async (req, res) => {
+  try {
+    const video = await Video.findById(req.params.id);
+
+    if (!video) {
+      return res.status(404).json({
+        message: "Video not found"
+      });
+    }
+
+    if (video.uploader.toString() !== req.userId.toString()) {
+      return res.status(403).json({
+        message: "You can only edit your own videos"
+      });
+    }
+
+    Object.assign(video, req.body);
+
+    await video.save();
+
+    res.json(video);
+  } catch (error) {
+    res.status(500).json({
+      message: "Video update failed"
+    });
+  }
+};
+
+export const deleteVideo = async (req, res) => {
+  try {
+    const video = await Video.findById(req.params.id);
+
+    if (!video) {
+      return res.status(404).json({
+        message: "Video not found"
+      });
+    }
+
+    if (video.uploader.toString() !== req.userId.toString()) {
+      return res.status(403).json({
+        message: "You can only delete your own videos"
+      });
+    }
+
+    await video.deleteOne();
+
+    res.json({
+      message: "Video deleted successfully"
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Video deletion failed"
+    });
+  }
+};
