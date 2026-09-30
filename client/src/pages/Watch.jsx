@@ -60,7 +60,29 @@ const Watch = () => {
 
       <p>{video.description}</p>
 
-      {/* Comments component */}
+      {comments.map((comment) => (
+        <div key={comment._id}>
+
+          <strong>
+            {comment.user.username}
+          </strong>
+
+          <p>{comment.text}</p>
+
+          {user?.id === comment.user._id && (
+            <>
+              <button onClick={() => editComment(comment)}>
+                Edit
+              </button>
+
+              <button onClick={() => deleteComment(comment._id)}>
+                Delete
+              </button>
+            </>
+          )}
+
+        </div>
+      ))}
 
     </main>
   );
